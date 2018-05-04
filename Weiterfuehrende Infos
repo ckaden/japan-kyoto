@@ -1,5 +1,5 @@
 // Abfrage, ob die Box überhaupt gezeigt werden soll
-<?php if(get_field('jk_mehrinfosanzeigen')): ?>
+<?php if (get_field('jk_mehrinfosanzeigen')) == "1" ?>
 // Checkboxabfrage per PHP?
 
 <div class="moreinfos">
