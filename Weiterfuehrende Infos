@@ -1,9 +1,15 @@
+// Abfrage, ob die Box überhaupt gezeigt werden soll
+<?php if(get_field('jk_mehrinfosanzeigen')): ?>
+// Checkboxabfrage per PHP?
+
 <div class="moreinfos">
 
-<div class="mftr">
+<?php if(get_field('jk_besucht_am')): ?>
+	<div class="mftr">
 <div class="mfl">Besucht am</div>
-<div class="mfr">???</div>
+<div class="mfr"><?php the_field('jk_besucht_am') ?></div>
 </div>
+<?php endif; ?>
 
 <div class="mftr">
 <div class="mfl">Empfohlene Besuchszeit</div>
@@ -57,3 +63,5 @@ KANA</div>
 <div class="mfr">[sc name="wiki link" wikilink="XXX" ] [sc name="flag japan"] [sc name="flag eng"]</div>
 </div>
 </div>
+
+<?php endif; ?>
