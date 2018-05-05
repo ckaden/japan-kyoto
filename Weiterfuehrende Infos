@@ -1,5 +1,32 @@
+										<?php
+											$infosanzeigen = (get_field('infobox_anzeigen'));
+
+											// Abfrage, ob die Box überhaupt gezeigt werden soll
+											if ($infosanzeigen == 1) {
+
+												echo '<div class="moreinfos">';
+
+												$besuchtam = get_field('jk_besucht_am');
+												if (get_field('jk_besucht_am')) {
+													echo '<div class="mftr">';
+													echo '<div class="mfl">Besucht am</div>';
+													echo '<div class="mfr">' . $besuchtam . '</div>';
+													echo '</div>';
+												}
+
+												echo "</div>";
+											}
+				?>
+
+
+
+
+
+
+$infosanzeigen = (get_field('jk_mehrinfosanzeigen'));
+
 // Abfrage, ob die Box überhaupt gezeigt werden soll
-<?php if (get_field('jk_mehrinfosanzeigen')) == "1" ?>
+<?php if $infosanzeigen == "1" ?>
 // Checkboxabfrage per PHP?
 
 <div class="moreinfos">
