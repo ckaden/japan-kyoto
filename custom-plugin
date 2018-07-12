@@ -1,0 +1,207 @@
+<?php
+/**
+* Plugin Name: Japan-Kyoto Custom: After_content Artikel
+* Plugin URI: https://japan-kyoto.de
+* Description: Damit werden die Bewertungen und Zusatzinformationen am Ende des Artikels dargestellt.
+* Version: 1.0
+* Author: Christian Kaden
+* Author URI: https://japan-kyoto.de
+* License: all rights reserved
+*/
+
+add_filter( 'the_content', 'zusatzinfos_after_content' );
+function zusatzinfos_after_content( $content ){
+  if( is_singular( 'post' ) ):
+    if( get_field('after_content_anzeigen') == true ): ob_start();
+
+    global $post;
+
+    // $postid = get_the_ID();
+    $poststatus = get_post_status($post->ID);
+
+    $review = RWP_API::get_post_reviews_boxes( $post->ID, false );
+    $reviewanzahl = count($review); ?>
+
+    <?php if( $reviewanzahl == 1): ?>
+
+      <h2>Bewertung</h2>
+
+      <?php
+      if( $poststatus == 'publish'):
+        echo do_shortcode( '[rwp-review id="0"]' );
+      else:
+        echo '<p>Review wird noch ausgeblendet, da es irgendwo einen Memory Leak wegen dem Shortcode gibt</p>';
+      endif;
+      ?>
+
+      <?php if( get_field('bewertung_thumbs_up')): ?>
+        <div class="thumbs thumbs-up">
+          <?php the_field('bewertung_thumbs_up') ?>
+        </div>
+      <?php endif; ?>
+
+      <?php if( get_field('bewertung_thumbs_down')): ?>
+        <div class="thumbs thumbs-down">
+          <?php the_field('bewertung_thumbs_down') ?>
+        </div>
+      <?php endif; ?>
+
+      <?php if( get_field('bewertung_thumbs_up')): ?>
+      <?php endif; ?>
+
+      <p style="text-align: center;"><a href="/bewertungen/">Alle Bewertungen von Japan-Kyoto</a></p>
+
+    <?php endif; ?>
+
+
+    <div class="touristische-informationen">
+
+      <h2>Informationen</h2>
+
+      <!-- Start Allgemein -->
+      <?php
+      if( have_rows('ti_allg')):
+      // https://support.advancedcustomfields.com/forums/topic/empty-group-always-returns-true/ ?>
+
+        <h3>Übersicht</h3>
+        <div class="ti-div">
+
+          <?php if (get_field('ti_allg_bezeichnung_name')): ?>
+            <p><b>Name: <?php the_field('ti_allg_bezeichnung_name') ?> (<?php the_field('ti_allg_typ'); ?>)</b></p>
+            <?php if (get_field('ti_allg_bezeichnung_kanji')): ?>
+              <p>Kanji: <?php the_field('ti_allg_bezeichnung_kanji'); ?> | <?php the_field('ti_allg_bezeichnung_kana'); ?> | <i><?php the_field('ti_allg_bezeichnung_hepburn'); ?></i></p>
+            <?php endif; ?>
+            <?php if (get_field('ti_allg_link_offizielle_webseite')):
+              $offlink = get_field('ti_allg_link_offizielle_webseite');
+              echo '<p>Link: <a href="' . $offlink['url'] . '" target="' . $offlink['target'] . '" >' . $offlink['title'] . '</a></p>';
+            else:
+              echo "<p>Keine offizielle Webseite vorhanden</p>";
+              endif; ?>
+          <?php endif; ?>
+
+          <?php if (get_field('ti_allg_besucht')): ?>
+            <p>Besucht am: <?php the_field('ti_allg_besucht'); ?></p>
+          <?php endif; ?>
+
+          <?php if (get_field('ti_allg_buddh')): ?>
+            <p>Buddhistische Schule: <?php the_field('ti_allg_buddh'); ?></p>
+          <?php endif; ?>
+
+          <?php // Ressourcenlinks
+          $rows = get_field('ti_allg_ress');
+          if($rows) {
+            echo '<p>Ressourcen: ';
+
+            foreach($rows as $row) {
+              $resslist[] = '<a href="' . $row['link']['url'] . '" target="' . $row['link']['target'] . '" >' . $row['link']['title'] . '</a>';
+            }
+            echo implode(" | ", $resslist);
+            echo "</p>";
+          }
+          ?>
+
+          <?php if (get_field('ti_allg_sonstiges')): ?>
+            <p><?php the_field('ti_allg_sonstiges'); ?></p>
+          <?php endif; ?>
+
+        </div>
+      <?php endif; ?>
+      <!-- Ende Allgemein -->
+
+      <!-- Start Access -->
+      <?php if( have_rows('ti_access')): //ti_access ?>
+        <h3><span class="ti-header">Eintritt, Öffnungszeiten und Anreise</span></h3>
+        <div class="ti-div">
+
+          <?php if (have_rows('ti_access_eintroff')): ?>
+            <?php if (get_field('ti_access_eintroff_eintritt')): ?>
+              <p><b>Eintritt: <?php the_field('ti_access_eintroff_eintritt'); ?> (Erwachsene)</b>
+                <?php if (get_field('ti_access_eintroff_link_detailliertepreise')): ?><br/><a href="<?php the_field('ti_access_eintroff_link_detailliertepreise') ?>" target="_blank">&#8251; Weitere Infos Preise</a><?php endif; ?></p>
+              <?php endif; ?>
+
+              <?php if (get_field('ti_access_eintroff_zeitraum')): ?>
+              <p><b>Öffnungszeiten:</b><br/>
+                <?php if( get_field('ti_access_eintroff_zeitraum')): ?><?php the_field('ti_access_eintroff_zeitraum'); ?><?php endif; ?>
+                <?php if( get_field('ti_access_eintroff_hinwsonder')): ?> | <?php the_field('ti_access_eintroff_hinwsonder'); ?><?php endif; ?>
+                <?php if( get_field('ti_access_eintroff_tagstun')): ?><br/><?php the_field('ti_access_eintroff_tagstun'); ?><?php endif; ?>
+                <?php if (get_field('ti_access_eintroff_link_offnungszeiten')): ?><br/><a href="<?php the_field('ti_access_eintroff_link_offnungszeiten') ?>" target="_blank">&#8251; Weitere Infos Öffnungszeiten</a><?php endif; ?>
+              <?php endif; ?>
+          <?php endif; ?>
+
+              <?php if (have_rows('ti_access_dauer')): ?>
+                <p>
+                  <?php if( get_field('ti_access_dauer_aufwand')): ?>Zeitaufwand: <?php the_field('ti_access_dauer_aufwand'); ?><?php endif; ?>
+                  <?php if( get_field('ti_access_dauer_verweilen')): ?><br/>Lädt zum Verweilen ein<?php endif; ?>
+                </p>
+              <?php endif; ?>
+
+              <?php if (get_field('ti_access_ort')): ?>
+                <p>Ort: <a href="<?php the_field('ti_access_ort'); ?>" target="_blank">Google Maps</a></p>
+              <?php endif; ?>
+
+              <?php
+              // if ( class_exists( 'GeoMashup' ) ) {
+              //   $current_location = GeoMashupDB::get_post_location( get_the_ID() );
+              //   if ( $current_location ) {
+              //     $map_arguments = array (
+              //       'map_content' => 'global',
+              //       'center_lat' => $current_location->lat,
+              //       'center_lng' => $current_location->lng,
+              //       'marker_select_info_window' => 'false',
+              //       'marker_select_highlight' => 'true',
+              //       'marker_select_center' => 'true',
+              //       'auto_info_open' => 'true',
+              //       'open_object_id' => $current_location->object_id,
+              //       'zoom' => '15',
+              //       'height' => '350px'
+              //     );
+              //     echo GeoMashup::map( $map_arguments );
+              //   }
+              // }
+              ?>
+
+              <?php if (get_field('ti_access_sonstiges')): ?>
+                <p><?php the_field('ti_access_sonstiges'); ?></p>
+              <?php endif; ?>
+
+              <?php // SHOW REGION TAXONOMY
+              the_terms( $post->ID, 'regionen', '<p>In den Gebieten: ', ', ', '</p>' );
+              ?>
+
+            </div>
+          <?php endif; ?>
+          <!-- Ende Access -->
+
+          <!-- GEO MASHUP NEARBY LIST -->
+          <?php echo GeoMashup::nearby_list('template=nearby-list-ti&radius=2&limit=10'); ?>
+
+          <?php
+
+          /*
+          *  Loop through post objects (assuming this is a multi-select field) ( don't setup postdata )
+          *  Using this method, the $post object is never changed so all functions need a seccond parameter of the post ID in question.
+          */
+
+          $post_objects = get_field('zeige_relevante_links');
+          // $post = $post_objects;
+
+          if( $post_objects ): ?>
+              <h3>Weiterlesen</h3>
+              <?php foreach( $post_objects as $post): // variable must be called $post (IMPORTANT) ?>
+                  <?php setup_postdata($post); ?>
+                [beba-link id="<?php echo $post->ID; ?>"]
+              <?php endforeach; ?>
+                  <?php wp_reset_postdata(); // IMPORTANT - reset the $post object so the rest of the page works correctly ?>
+              <?php endif; ?>
+
+        </div>
+
+        <?php
+        $infobox  = ob_get_clean();
+        $content .= $infobox;
+      endif; // Infobox anzeigen
+    endif; // if singular
+
+    return $content;
+  }
+  ?>
